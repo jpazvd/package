@@ -8,9 +8,9 @@ program define package, rclass
 
 	version 14
 
-	syntax , 					///
-		name(string) 			///
+	syntax [anything(name=name2)], 					///
 		[ 						///
+			name(string) 			///
 			path(string) 			///
 			prefix(string) 			///
 			version(string) 		///
@@ -36,7 +36,7 @@ program define package, rclass
 			pkg					  ///
 			helpfile  	  ///
 			replacehelp  	///
-			quietly				///
+			QUIetly				///
 		]
 
 	return add  // ??? I don't think this should go here. 
@@ -45,12 +45,23 @@ program define package, rclass
            Conditions
 ==================================================*/
 
+	if ( ("`name'" == "" & "`name2'" == "") |  /* 
+	 */  ("`name'" != "" & "`name2'" != "") ) {
+		noi disp in r "you must use one of the two syntaxes below:" _n /* 
+		 */  in y "Syntax 1: " in w "package {it:pkgname}" _n /*
+		 */  in y "Syntax 2: " in w "package, name({it:pkgname})"  
+		error
+	}
+	if ("`name2'" != "") local name "`name2'"
+	
 	if ("`title'" != "") {
 		local title ": `title'"
 	}
-	if ("`quietly'" != "") {
+	if ("`quietly'" == "") {
 		local noi noisily
 	}
+	else local noi qui
+
 	if ("`replacepkg'" != "") {
 		local replacepkg "replace"
 	}
@@ -93,8 +104,8 @@ program define package, rclass
 	`noi' di ""
 	`noi' di ""
 	 local usercd "`c(pwd)'"
-	`noi' cd "`path'"
-	`noi' cd "`name'/`prefix'/"
+	* `noi' cd "`path'"
+	* `noi' cd "`name'/`prefix'/"
 
 ************************************************************
 
@@ -323,18 +334,13 @@ qui if ("`helpfile'" != "") {
 	local datetime: disp %tcDDmonthCCYY-HHMMSS clock("`c(current_date)'`c(current_time)'", "DMYhms")
 	local datetime = trim("`datetime'")
 	
-	file open `f' using `fout', write append
+	file open `f' using "`path'/`name'/`name'.sthlp", write `replacehelp'
+	
 	file write `f' `"{smcl}"' _n 
 	file write `f' `"{* *! version 1.0 `date'}{...}"' _n 
 	file write `f' `"{vieweralsosee "" "--"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Install gtsd" "ssc install gtsd"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Help gtsd (if installed)" "help gtsd"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Install dirstr" "ssc install dirstr"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Help dirstr (if installed)" "help dirstr"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Install datalibweb" "ssc install datalibweb"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Help datalibweb (if installed)" "help datalibweb"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Install primus" "ssc install primus"}{...}"' _n 
-	file write `f' `"{vieweralsosee "Help primus (if installed)" "help primus"}{...}"' _n 
+	file write `f' `"{vieweralsosee "Install CCC" "ssc install CCC"}{...}"' _n 
+	file write `f' `"{vieweralsosee "Help CCC (if installed)" "help CCC"}{...}"' _n 
 	file write `f' `"{viewerjumpto "Syntax" "`name'##syntax"}{...}"' _n 
 	file write `f' `"{viewerjumpto "Description" "`name'##description"}{...}"' _n 
 	file write `f' `"{viewerjumpto "Options" "`name'##options"}{...}"' _n 
@@ -342,7 +348,7 @@ qui if ("`helpfile'" != "") {
 	file write `f' `"{viewerjumpto "Examples" "`name'##examples"}{...}"' _n 
 	file write `f' `"{title:Title}"' _n 
 	file write `f' `"{phang}"' _n 
-	file write `f' "{bf:`name'} {hline 2} <insert title here>" _n 
+	file write `f' "{bf:`name'} {hline 2} `title'" _n 
 	file write `f' `""' _n 
 	file write `f' `"{marker syntax}{...}"' _n 
 	file write `f' `"{title:Syntax}"' _n 
@@ -367,7 +373,7 @@ qui if ("`helpfile'" != "") {
 	file write `f' `"{marker description}{...}"' _n 
 	file write `f' `"{title:Description}"' _n 
 	file write `f' `"{pstd}"' _n 
-	file write `f' "{cmd:`name'} does ... <insert description>" _n 
+	file write `f' "{cmd:`name'} `description'" _n 
 	file write `f' `""' _n 
 	file write `f' `"{marker options}{...}"' _n 
 	file write `f' `"{title:Options}"' _n 
@@ -407,10 +413,7 @@ qui if ("`helpfile'" != "") {
 	file write `f' "{help command2} (if installed)   {stata ssc install command2} (to install this command)" _n 
 	file write `f' `""' _n 
 
-	file close _all
-	
-	copy `fout' "`path'/`name'/`name'.sthlp", `replacehelp'
-
+	file close `f'
 
 }
 
