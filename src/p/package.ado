@@ -10,10 +10,10 @@ program define package, rclass
 
 	syntax , 					///
 		name(string) 			///
+		prefix(string) 			///
+		path(string) 			///
+		version(string) 		///
 		[ 						///
-			path(string) 			///
-			prefix(string) 			///
-			version(string) 		///
 			title(string)		///
 			description(string)	///
 			date(string) 		///
