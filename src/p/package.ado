@@ -8,12 +8,12 @@ program define package, rclass
 
 	version 14
 
-	syntax , 					///
-		name(string) 			///
-		prefix(string) 			///
-		path(string) 			///
-		version(string) 		///
+	syntax [anything(name=name2)], 					///
 		[ 						///
+			name(string) 			///
+			path(string) 			///
+			prefix(string) 			///
+			version(string) 		///
 			title(string)		///
 			description(string)	///
 			date(string) 		///
@@ -32,19 +32,36 @@ program define package, rclass
 			appendtoc			///
 			replacereadme		///
 			appendreadme		///
-			toc					///
-			pkg					///
-			quietly				///
+			toc					  ///
+			pkg					  ///
+			helpfile  	  ///
+			replacehelp  	///
+			QUIetly				///
 		]
 
-	return add
+	return add  // ??? I don't think this should go here. 
+	
+/*==================================================
+           Conditions
+==================================================*/
+
+	if ( ("`name'" == "" & "`name2'" == "") |  /* 
+	 */  ("`name'" != "" & "`name2'" != "") ) {
+		noi disp in r "you must use one of the two syntaxes below:" _n /* 
+		 */  in y "Syntax 1: " in w "package {it:pkgname}" _n /*
+		 */  in y "Syntax 2: " in w "package, name({it:pkgname})"  
+		error
+	}
+	if ("`name2'" != "") local name "`name2'"
 	
 	if ("`title'" != "") {
 		local title ": `title'"
 	}
-	if ("`quietly'" != "") {
+	if ("`quietly'" == "") {
 		local noi noisily
 	}
+	else local noi qui
+
 	if ("`replacepkg'" != "") {
 		local replacepkg "replace"
 	}
@@ -60,8 +77,20 @@ program define package, rclass
 	if ("`replacereadme'" != "") {
 		local replacereadme "replace"
 	}
+	if ("`replacehelp'" != "") {
+		local replacehelp "replace"
+	}
 	if ("`appendreadme'" != "") {
 		local appendreadme "append"
+	}
+	if ("`version'" == "") {
+		local version = 3 // see help usersite##remarks8
+	}
+	if ("`path'" == "") {
+		local path "`c(pwd)'"
+		noi disp in r "Note: " in y "you did not specify a directory path. " _c /* 
+		 */ "{cmd:package} will use current directory: " _n /* 
+		 */ in w "`path'"
 	}
 
 ************************************************************
@@ -74,13 +103,14 @@ program define package, rclass
 	
 	`noi' di ""
 	`noi' di ""
-	`noi' cd "`path'"
-	`noi' cd "`name'/`prefix'/"
+	 local usercd "`c(pwd)'"
+	* `noi' cd "`path'"
+	* `noi' cd "`name'/`prefix'/"
 
 ************************************************************
 
 	if ("`date'" == "") {
-		local datef = c(current_date)
+		local date: disp %td date("`c(current_date)'", "DMY")
 	}
 	if ("`license'" == "") {
 		local license "MIT"
@@ -94,7 +124,7 @@ program define package, rclass
 	tempname in2 		
 	`noi' di ""
 	
-if ("`pkg'" == "pkg") {
+qui if ("`pkg'" == "pkg") {
 	
 	tempname outpkg
 			
@@ -190,7 +220,7 @@ qui if ("`toc'" == "toc") {
 
 	*********************************************************
 
-if ("`readme'" != "") {
+qui if ("`readme'" != "") {
 	
 	tempname outreadme
 			
@@ -292,7 +322,103 @@ if ("`readme'" != "") {
 	file close `outreadme'
 	
 }
+
+/*==================================================
+           Help file
+==================================================*/
+
+qui if ("`helpfile'" != "") {
+	tempfile fout
+	tempname f
+	local date: disp %tdDD_Mon_CCYY date("`c(current_date)'", "DMY")
+	local datetime: disp %tcDDmonthCCYY-HHMMSS clock("`c(current_date)'`c(current_time)'", "DMYhms")
+	local datetime = trim("`datetime'")
 	
+	file open `f' using "`path'/`name'/`name'.sthlp", write `replacehelp'
+	
+	file write `f' `"{smcl}"' _n 
+	file write `f' `"{* *! version 1.0 `date'}{...}"' _n 
+	file write `f' `"{vieweralsosee "" "--"}{...}"' _n 
+	file write `f' `"{vieweralsosee "Install CCC" "ssc install CCC"}{...}"' _n 
+	file write `f' `"{vieweralsosee "Help CCC (if installed)" "help CCC"}{...}"' _n 
+	file write `f' `"{viewerjumpto "Syntax" "`name'##syntax"}{...}"' _n 
+	file write `f' `"{viewerjumpto "Description" "`name'##description"}{...}"' _n 
+	file write `f' `"{viewerjumpto "Options" "`name'##options"}{...}"' _n 
+	file write `f' `"{viewerjumpto "Remarks" "`name'##remarks"}{...}"' _n 
+	file write `f' `"{viewerjumpto "Examples" "`name'##examples"}{...}"' _n 
+	file write `f' `"{title:Title}"' _n 
+	file write `f' `"{phang}"' _n 
+	file write `f' "{bf:`name'} {hline 2} `title'" _n 
+	file write `f' `""' _n 
+	file write `f' `"{marker syntax}{...}"' _n 
+	file write `f' `"{title:Syntax}"' _n 
+	file write `f' `"{p 8 17 2}"' _n 
+	file write `f' `"{cmdab:`name'}"' _n 
+	file write `f' `"anything"' _n 
+	file write `f' `"[{cmd:,}"' _n 
+	file write `f' "{it:options}]" _n 
+	file write `f' `""' _n 
+	file write `f' `"{synoptset 20 tabbed}{...}"' _n 
+	file write `f' `"{synopthdr}"' _n 
+	file write `f' `"{synoptline}"' _n 
+	file write `f' `"{syntab:Main}"' _n 
+	file write `f' `"{synopt:{opt option1(string)}} .{p_end}"' _n 
+	file write `f' `"{synopt:{opt option2(numlist)}} .{p_end}"' _n 
+	file write `f' `"{synopt:{opt option3(varname)}} .{p_end}"' _n 
+	file write `f' `"{synopt:{opt te:st}} .{p_end}"' _n 
+	file write `f' `"{synoptline}"' _n 
+	file write `f' `"{p2colreset}{...}"' _n 
+	file write `f' `"{p 4 6 2}"' _n 
+	file write `f' `""' _n 
+	file write `f' `"{marker description}{...}"' _n 
+	file write `f' `"{title:Description}"' _n 
+	file write `f' `"{pstd}"' _n 
+	file write `f' "{cmd:`name'} `description'" _n 
+	file write `f' `""' _n 
+	file write `f' `"{marker options}{...}"' _n 
+	file write `f' `"{title:Options}"' _n 
+	file write `f' `"{dlgtab:Main}"' _n 
+	file write `f' `"{phang}"' _n 
+	file write `f' `"{opt option1(string)}"' _n 
+	file write `f' `""' _n 
+	file write `f' `"{phang}"' _n 
+	file write `f' `"{opt option2(numlist)}"' _n 
+	file write `f' `""' _n 
+	file write `f' `"{phang}"' _n 
+	file write `f' `"{opt option3(varname)}"' _n 
+	file write `f' `""' _n 
+	file write `f' `"{phang}"' _n 
+	file write `f' `"{opt te:st}"' _n 
+	file write `f' `""' _n 
+	file write `f' `""' _n 
+	file write `f' `"{marker examples}{...}"' _n 
+	file write `f' `"{title:Examples}"' _n 
+	file write `f' `""' _n 
+	file write `f' "{phang} <insert example command>" _n 
+	file write `f' `""' _n 
+	file write `f' `"{title:Author}"' _n 
+	file write `f' `"{p}"' _n 
+	file write `f' `""' _n 
+	file write `f' `"<insert name>, <insert institution>."' _n 
+	file write `f' `""' _n 
+	file write `f' `"Email {browse "mailto:firstname.givenname@domain":firstname.givenname@domain}"' _n 
+	file write `f' `""' _n 
+	file write `f' `"{title:See Also}"' _n 
+	file write `f' `""' _n 
+	file write `f' `"NOTE: this part of the help file is old style! delete if you don't like"' _n 
+	file write `f' `""' _n 
+	file write `f' `"Related commands:"' _n 
+	file write `f' `""' _n 
+	file write `f' "{help command1} (if installed)" _n 
+	file write `f' "{help command2} (if installed)   {stata ssc install command2} (to install this command)" _n 
+	file write `f' `""' _n 
+
+	file close `f'
+
+}
+
+
+cd "`usercd'"
 ************************************************************
 
 	return local name 			"`name'"
