@@ -92,9 +92,16 @@ program define package, rclass
 		 */ "{cmd:package} will use current directory: " _n /* 
 		 */ in w "`path'"
 	}
+	if ("`author'" == "") {
+		local author = "`c(username)'"
+		noi disp in y "option {it:author()} has been set to `author'"
+	}
 
 ************************************************************
-
+	cap mkdir "`path'/`name'"
+	if (_rc == 0) {
+		noi disp in y "`path'/`name' has been created."
+	}
 	local filename "`name'.pkg"
 	local filename "`path'/`name'/`filename'"
 	
@@ -137,62 +144,44 @@ qui if ("`pkg'" == "pkg") {
 		file write `outpkg' 	"d License: `license'"	_n
 		file write `outpkg' 	"d "	_n
 
-		local list1 : dir  . dirs "*" 
-		local n1 = wordcount(`"`list1'"')
-		local tmp1 = subinstr(`"`list1'"',`"""',"",.)
-
-		forvalues a = 1(1)`n1' {
-			
-			local v`a' = word("`tmp1'", `a') 
-			qui di "`a'  - `v`a''"
-			qui cd `v`a''/
-			qui cd
-			
-			local list2 : dir  . dirs "*" 
-			local n2 = wordcount(`"`list2'"')
-			
-			if (`n2' == 0) {
-				local list2 : dir  . files "*" 
-				local flag = 1
-			}
-			
-			local n2 = wordcount(`"`list2'"')
-			local tmp2 = subinstr(`"`list2'"',`"""',"",.)
-			
-			forvalues b = 1(1)`n2' {
-
-				if (`flag' != 1) {
-				
-					local k`b' = word("`tmp2'", `b') 
-					qui cd `k`b''/
-					
-					local list3 : dir  . files "*" 
-					local n3 = wordcount(`"`list3'"')
-					local tmp3 = subinstr(`"`list3'"',`"""',"",.)
-
-					forvalues c = 1(1)`n3' {
-					
-						local j`c' = word("`tmp3'", `c') 
-						`noi' di "`prefix'/`v`a''/`k`b''/`j`c''"
-						file write `outpkg'	"F `prefix'/`v`a''/`k`b''/`j`c''"	_n
-					
-					}
-					
-					qui cd ..
-				
-				}
-				
-				if (`flag' == 1)  {
-				
-					local k`b' = word("`tmp2'", `b') 
-					`noi' di "`prefix'/`v`a''/`k`b''"
-					file write `outpkg'	"F `prefix'/`v`a''/`k`b''"	_n
-				}
-			}
-			
-			qui cd ..
+		*---------- Files in the root of the directory
+		
+		local toexclude "md$|pkg$|toc$|gitattributes|LICENSE|gitignore"
+		local files: dir "`path'/`name'" files "*"
+		foreach file of local files {
+			if regexm("`file'", "`toexclude'") continue
+			file write `outpkg'	"F `file'"	_n
 		}
-
+		
+		*---------- Files in subdirectories
+		local dirs: dir "`path'/`name'" dirs "*"
+		
+		gettoken dir dirs : dirs
+		while ("`dir'" != "")  {
+			if regexm("`dir'", "^\.git|^_") {
+				gettoken dir dirs : dirs
+				continue
+			}
+			
+			local files: dir "`path'/`name'/`dir'" files "*"
+			
+			if (`"`files'"' != "") {
+				foreach file of local files {
+					if regexm("`file'", "`toexclude'") continue
+					file write `outpkg'	"F `dir'/`file'"	_n
+				}	
+			}
+			
+			local subdirs: dir "`path'/`name'/`dir'" dir "*"
+			
+			if (`"`subdirs'"' != "") {
+				foreach subdir of local subdirs {
+					if regexm("`subdir'", "^\.git|^_") continue
+					local dirs "`dirs' `dir'/`subdir'"
+				}		
+			}
+			gettoken dir dirs : dirs
+		}
 	file close `outpkg'
 	
 }
