@@ -63,6 +63,15 @@ program define package, rclass
 	if ("`appendreadme'" != "") {
 		local appendreadme "append"
 	}
+	if ("`version'" == "") {
+		local version = 3 // see help usersite##remarks8
+	}
+	if ("`path'" == "") {
+		local path "`c(pwd)'"
+		noi disp in r "Note: " in y "you did not specify a directory path. " _c /* 
+		 */ "{cmd:package} will use current directory: " _n /* 
+		 */ in w "`path'"
+	}
 
 ************************************************************
 
@@ -74,13 +83,14 @@ program define package, rclass
 	
 	`noi' di ""
 	`noi' di ""
+	 local usercd "`c(pwd)'"
 	`noi' cd "`path'"
 	`noi' cd "`name'/`prefix'/"
 
 ************************************************************
 
 	if ("`date'" == "") {
-		local datef = c(current_date)
+		local date: disp %td date("`c(current_date)'", "DMY")
 	}
 	if ("`license'" == "") {
 		local license "MIT"
@@ -292,7 +302,8 @@ if ("`readme'" != "") {
 	file close `outreadme'
 	
 }
-	
+
+cd "`usercd'"
 ************************************************************
 
 	return local name 			"`name'"
