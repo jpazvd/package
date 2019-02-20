@@ -10,7 +10,7 @@
 {viewerjumpto "Examples" "package##examples"}{...}
 {title:Title}
 {phang}
-{bf:package} {hline 2} <insert title here>
+{bf:package} {hline 2} Stata module to generate a Github dissemination package
 
 {marker syntax}{...}
 {title:Syntax}
