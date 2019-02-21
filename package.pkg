@@ -1,7 +1,8 @@
-v 1.0.2
+v 3
 d 'PACKAGE': Stata module to generate a Github dissemination package
 d 
-d Distribution-Date: 18 February 2019
+d Distribution-Date: 20 February 2019
 d License: MIT
 d 
 F src/p/package.ado
+F src/p/package.sthlp
