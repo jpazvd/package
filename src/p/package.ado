@@ -23,6 +23,9 @@ program define package, rclass
 			institution(string) ///
 			email(string) 		///
 			web(string) 		///
+			github(string) 		///
+			linkdn(string) 		///
+			twitter(string) 	///
 			license(string) 	///
 			note(string)		///
 			keyword(string)		///
