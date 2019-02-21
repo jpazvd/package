@@ -1,0 +1,167 @@
+/*
+project:       Create package for ado files
+Author:        JP Azevedo and Andres Castaneda
+Dependencies:  The World Bank
+-----------------------------------------------------
+Creation Date:    21 Feb 2019
+Modification Date:
+DLG-file version:    01
+References:
+Output:             pkg, toc, sthlp, and readme.dm files
+*/
+
+VERSION 15
+
+POSITION . . 450 530
+
+DIALOG main, label("generate - Generate a new variable") tabtitle("Main")
+BEGIN
+  TEXT     tx_name     10  10   120  ., label("Name of package:")
+  EDIT     ed_name     10  +20  120  ., error("Name of package")
+  TEXT     tx_dir      10  +25  390  ., label("Directory Path:")
+  FILE     fi_dir      10  +20  390  ., label("Browse ...")        ///
+           directory
+
+					 TEXT     tx_title     10  +30  390  ., label("Title:")
+  EDIT     ed_title     10  +20  390  .,
+
+  TEXT     tx_author     10  +30  390  ., label("Author:")
+  EDIT     ed_author     10  +20  390  .,
+
+	TEXT     tx_insti     10  +30  390  ., label("Institution:")
+  EDIT     ed_insti     10  +20  390  .,
+
+	TEXT     tx_desc     10  +30  390  ., label("Description:")
+  EDIT     ed_desc     10  +20  390  .,
+
+	TEXT     tx_web     10  +30  390  ., label("Website:")
+  EDIT     ed_web     10  +20  390  .,
+
+	TEXT     tx_note     10  +30  390  ., label("Notes:")
+  EDIT     ed_note     10  +20  390  .,
+
+	TEXT     tx_handle     10  +30  390  ., label("Handle:")
+  EDIT     ed_handle     10  +20  390  .,
+	
+	TEXT     tx_license    10  +30  200  ., label("License type:")
+  COMBOBOX cb_license     @   +20  250  .,                            ///
+           dropdownlist                                            ///
+           contents(license_list)
+
+END
+
+DIALOG sub, tabtitle("files")
+BEGIN
+  GROUPBOX gb_pkg      10  10   390  100, label(".pkg file")
+  CHECKBOX ck_pkg     20 +20 120 ., label("Create .pkg") /*
+ */	       onclickon(script sub_ck_pkg_on)  /*
+ */        onclickoff(script sub_ck_pkg_off)
+  CHECKBOX ck_rpkg    +120 @ 120 ., label("Replace .pkg")
+  CHECKBOX ck_apkg    +120 @ 120 ., label("Append .pkg")
+	TEXT     tx_prefix   20  +30  200  ., label("Prefix:")
+  EDIT     ed_prefix   20  +20  120  .,
+
+	GROUPBOX gb_toc    10  +40   390  50, label("stata.toc")
+	CHECKBOX ck_toc     20 +20 120 ., label("Create stata.toc") /*
+ */	       onclickon(script  sub_ck_toc_on)  /*
+ */        onclickoff(script sub_ck_toc_off)
+  CHECKBOX ck_rtoc    +120 @ 120 ., label("Replace stata.toc")
+  CHECKBOX ck_atoc    +120 @ 120 ., label("Append stata.toc")
+
+	GROUPBOX gb_hlp    10  +40   390  50, label("Help file")
+	CHECKBOX ck_hlp     20 +20 120 ., label("Create Help file") /*
+ */	       onclickon(sub.ck_rhlp.enable)  /*
+ */        onclickoff(sub.ck_rhlp.disable)
+  CHECKBOX ck_rhlp    +120 @ 120 ., label("Replace Help file")
+
+
+
+
+END
+
+SCRIPT sub_ck_pkg_on
+BEGIN
+   sub.ck_rpkg.enable
+   sub.ck_apkg.enable
+   sub.ed_prefix.enable
+END
+
+SCRIPT sub_ck_pkg_off
+BEGIN
+   sub.ck_rpkg.disable
+   sub.ck_apkg.disable
+	 sub.ed_prefix.disable
+END
+
+SCRIPT sub_ck_toc_on
+BEGIN
+   sub.ck_rtoc.enable
+   sub.ck_atoc.enable
+END
+
+SCRIPT sub_ck_toc_off
+BEGIN
+   sub.ck_rtoc.disable
+   sub.ck_atoc.disable
+END
+
+
+LIST license_list
+BEGIN
+	None
+	MIT
+	Academic Free License v3.0
+	Apache license 2.0
+	Artistic license 2.0
+	Boost Software License 1.0
+	BSD 2-clause "Simplified" license
+	BSD 3-clause "New" or "Revised" license
+	BSD 3-clause Clear license
+	Creative Commons license family
+	Creative Commons Zero v1.0 Universal
+	Creative Commons Attribution 4.0
+	Creative Commons Attribution Share Alike 4.0
+	Do What The F*ck You Want To Public License
+	Educational Community License v2.0
+	Eclipse Public License 1.0
+	European Union Public License 1.1
+	GNU Affero General Public License v3.0
+	GNU General Public License family
+	GNU General Public License v2.0
+	GNU General Public License v3.0
+	GNU Lesser General Public License family
+	GNU Lesser General Public License v2.1
+	GNU Lesser General Public License v3.0
+	ISC
+	LaTeX Project Public License v1.3c
+	Microsoft Public License
+	Mozilla Public License 2.0
+	Open Software License 3.0
+	PostgreSQL License
+	SIL Open Font License 1.1
+	University of Illinois/NCSA Open Source License
+	The Unlicense
+	zLib License
+END
+
+
+
+OK      ok1,  label("OK")
+CANCEL  can1, label("Cancel")
+SUBMIT  sub1, label("Submit")
+HELP    hlp1, view("help package")
+RESET   res1
+COPY    copy1
+
+PROGRAM command
+BEGIN
+    put "package "
+    require main.ed_name
+    put main.ed_name " "
+    put ", "
+    if sum.ck_pkg {
+        put "pkg "
+    }
+END
+
+
