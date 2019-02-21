@@ -8,35 +8,35 @@ program define package, rclass
 
 	version 14
 
-	syntax [anything(name=name2)], 					///
-		[ 						///
-			name(string) 			///
-			path(string) 			///
-			prefix(string) 			///
-			version(string) 		///
-			title(string)		///
-			description(string)	///
-			date(string) 		///
-			author(string) 		///
-			institution(string) ///
-			email(string) 		///
-			web(string) 		///
-			license(string) 	///
-			note(string)		///
-			keyword(string)		///
-			handle(string)		///
-			readme(string)		///
-			replacepkg 			///
-			appendpkg			///
-			replacetoc 			///
-			appendtoc			///
-			replacereadme		///
-			appendreadme		///
-			toc					  ///
-			pkg					  ///
-			helpfile  	  ///
-			replacehelp  	///
-			QUIetly				///
+	syntax [anything(name=name2)], 		 ///
+		[ 						                   ///
+			name(string) 			             ///
+			path(string) 			             ///
+			prefix(string) 			           ///
+			version(string) 		           ///
+			title(string)		               ///
+			description(string)	           ///
+			date(string) 		               ///
+			author(string) 		             ///
+			institution(string)            ///
+			email(string) 		             ///
+			web(string) 		               ///
+			license(string) 	             ///
+			note(string)	                 ///
+			keyword(string)		             ///
+			handle(string)		             ///
+			readme(string)		             ///
+			replacepkg 			               ///
+			appendpkg			                 ///
+			replacetoc                     ///
+			appendtoc			                 ///
+			replacereadme		               ///
+			appendreadme		               ///
+			toc					                   ///
+			pkg					                   ///
+			helpfile  	                   ///
+			replacehelp  	                 ///
+			QUIetly				                 ///
 		]
 
 	return add  // ??? I don't think this should go here. 
@@ -45,8 +45,11 @@ program define package, rclass
            Conditions
 ==================================================*/
 
-	if ( ("`name'" == "" & "`name2'" == "") |  /* 
-	 */  ("`name'" != "" & "`name2'" != "") ) {
+	if ("`name'" == "" & "`name2'" == "") {
+		db package
+		exit
+	}
+	if ("`name'" != "" & "`name2'" != "")  {
 		noi disp in r "you must use one of the two syntaxes below:" _n /* 
 		 */  in y "Syntax 1: " in w "package {it:pkgname}" _n /*
 		 */  in y "Syntax 2: " in w "package, name({it:pkgname})"  

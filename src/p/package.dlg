@@ -1,3 +1,4 @@
+
 /*
 project:       Create package for ado files
 Author:        JP Azevedo and Andres Castaneda
@@ -10,41 +11,35 @@ References:
 Output:             pkg, toc, sthlp, and readme.dm files
 */
 
-VERSION 15
+VERSION 14
 
-POSITION . . 450 530
+POSITION . . 450 480
 
-DIALOG main, label("generate - Generate a new variable") tabtitle("Main")
+DIALOG main, label("package - Generate package files for new ado") tabtitle("Main")
 BEGIN
-  TEXT     tx_name     10  10   120  ., label("Name of package:")
+  TEXT     tx_name     10  20   120  ., label("Name of package:")
   EDIT     ed_name     10  +20  120  ., error("Name of package")
   TEXT     tx_dir      10  +25  390  ., label("Directory Path:")
   FILE     fi_dir      10  +20  390  ., label("Browse ...")        ///
-           directory
+           directory option(path)
 
-					 TEXT     tx_title     10  +30  390  ., label("Title:")
-  EDIT     ed_title     10  +20  390  .,
+	TEXT     tx_title     10  +30  390  ., label("Title:")
+  EDIT     ed_title     10  +20  390  ., option(title)
 
   TEXT     tx_author     10  +30  390  ., label("Author:")
-  EDIT     ed_author     10  +20  390  .,
+  EDIT     ed_author     10  +20  390  ., option(author)
 
 	TEXT     tx_insti     10  +30  390  ., label("Institution:")
-  EDIT     ed_insti     10  +20  390  .,
+  EDIT     ed_insti     10  +20  390  ., option(institution)
 
 	TEXT     tx_desc     10  +30  390  ., label("Description:")
-  EDIT     ed_desc     10  +20  390  .,
+  EDIT     ed_desc     10  +20  390  ., option(description)
 
 	TEXT     tx_web     10  +30  390  ., label("Website:")
-  EDIT     ed_web     10  +20  390  .,
-
-	TEXT     tx_note     10  +30  390  ., label("Notes:")
-  EDIT     ed_note     10  +20  390  .,
-
-	TEXT     tx_handle     10  +30  390  ., label("Handle:")
-  EDIT     ed_handle     10  +20  390  .,
+  EDIT     ed_web     10  +20  390  ., option(web)
 	
 	TEXT     tx_license    10  +30  200  ., label("License type:")
-  COMBOBOX cb_license     @   +20  250  .,                            ///
+  COMBOBOX cb_license     @   +20  250  ., option(license)                 ///
            dropdownlist                                            ///
            contents(license_list)
 
@@ -52,31 +47,40 @@ END
 
 DIALOG sub, tabtitle("files")
 BEGIN
-  GROUPBOX gb_pkg      10  10   390  100, label(".pkg file")
+  GROUPBOX gb_pkg      10  20   390  100, label(".pkg file")
   CHECKBOX ck_pkg     20 +20 120 ., label("Create .pkg") /*
  */	       onclickon(script sub_ck_pkg_on)  /*
- */        onclickoff(script sub_ck_pkg_off)
-  CHECKBOX ck_rpkg    +120 @ 120 ., label("Replace .pkg")
-  CHECKBOX ck_apkg    +120 @ 120 ., label("Append .pkg")
-	TEXT     tx_prefix   20  +30  200  ., label("Prefix:")
-  EDIT     ed_prefix   20  +20  120  .,
+ */        onclickoff(script sub_ck_pkg_off) option(pkg)
+  CHECKBOX ck_rpkg    +120 @ 120 ., label("Replace .pkg") option(replacepkg)
+  CHECKBOX ck_apkg    +120 @ 120 ., label("Append .pkg")  option(appendpkg)
+	TEXT     tx_prefix   20  +30  200  ., label("Prefix:") 
+  EDIT     ed_prefix   20  +20  120  ., option(prefix)
 
 	GROUPBOX gb_toc    10  +40   390  50, label("stata.toc")
 	CHECKBOX ck_toc     20 +20 120 ., label("Create stata.toc") /*
  */	       onclickon(script  sub_ck_toc_on)  /*
- */        onclickoff(script sub_ck_toc_off)
-  CHECKBOX ck_rtoc    +120 @ 120 ., label("Replace stata.toc")
-  CHECKBOX ck_atoc    +120 @ 120 ., label("Append stata.toc")
+ */        onclickoff(script sub_ck_toc_off) option(toc)
+  CHECKBOX ck_rtoc    +120 @ 120 ., label("Replace stata.toc") option(replacetoc)
+  CHECKBOX ck_atoc    +120 @ 120 ., label("Append stata.toc")  option(appendtoc)
 
 	GROUPBOX gb_hlp    10  +40   390  50, label("Help file")
 	CHECKBOX ck_hlp     20 +20 120 ., label("Create Help file") /*
  */	       onclickon(sub.ck_rhlp.enable)  /*
- */        onclickoff(sub.ck_rhlp.disable)
-  CHECKBOX ck_rhlp    +120 @ 120 ., label("Replace Help file")
+ */        onclickoff(sub.ck_rhlp.disable) option(helpfile)
+  CHECKBOX ck_rhlp    +120 @ 120 ., label("Replace Help file") option(replacehelp)
 
+	GROUPBOX gb_md    10  +40   390  200, label("Readme file")
+	TEXT     tx_md    20  +20  150  ., label("File name:") 
+  EDIT     ed_md    20  +20  150  ., option(readme)
+  
+	TEXT     tx_note    20  +30  350  ., label("Notes:")
+  EDIT     ed_note    20  +20  350  ., option(note)
 
-
-
+	TEXT     tx_handle  20  +30  350  ., label("Handle:")
+  EDIT     ed_handle  20  +20  350  ., option(handle)
+	
+	CHECKBOX ck_rmd   20 +30 120 ., label("Replace Help file") option(replacereadme)
+	
 END
 
 SCRIPT sub_ck_pkg_on
@@ -144,24 +148,40 @@ BEGIN
 	zLib License
 END
 
-
-
-OK      ok1,  label("OK")
-CANCEL  can1, label("Cancel")
-SUBMIT  sub1, label("Submit")
-HELP    hlp1, view("help package")
-RESET   res1
-COPY    copy1
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1,   view("help package")
+RESET res1
+COPY copy1
 
 PROGRAM command
 BEGIN
-    put "package "
-    require main.ed_name
-    put main.ed_name " "
-    put ", "
-    if sum.ck_pkg {
-        put "pkg "
-    }
+ put "package "
+ require main.ed_name
+ put main.ed_name
+ beginoptions
+     	optionarg main.fi_dir
+     	optionarg main.ed_title
+     	optionarg main.ed_author
+			optionarg main.ed_insti
+			optionarg main.ed_desc
+			optionarg main.ed_web
+			optionarg main.cb_license
+			optionarg sub.ed_md
+			optionarg sub.ed_note
+			optionarg sub.ed_handle
+			option sub.ck_pkg
+			option sub.ck_rpkg
+			option sub.ck_apkg
+			option sub.ck_toc
+			option sub.ck_rtoc
+			option sub.ck_atoc
+			option sub.ck_hlp
+			option sub.ck_rhlp
+			option sub.ck_rmd
+  endoptions
+ 
 END
 
-
+*************************************************
