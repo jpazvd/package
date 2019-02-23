@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.0 20 Feb 2019}{...}
+{* *! version 1.0.3 20 Feb 2019}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "Install CCC" "ssc install CCC"}{...}
 {vieweralsosee "Help CCC (if installed)" "help CCC"}{...}
@@ -32,25 +32,30 @@
 {synopt:{opt name(string)}} name of the package following syntax 2.{p_end}
 {synopt:{opt path(string)}} directory path of package{p_end}
 
+{syntab:General parameters (when specified, this optional paramameters are used by README, PKG, TOC and HELP fiels)}
+{synopt:{opt title(string)}} title of the package. Small description{p_end}
+{synopt:{opt author(string)}} name of author/s. Use comma to separate multiple authors.{p_end}
+{synopt:{opt email(string)}} email of author/s. Use comma to separate multiple emails.{p_end}
+{synopt:{opt institution(string)}} institution of author or package dependency. Use comma to separate multiple institutions.{p_end}
+{synopt:{opt web(string)}} website address of author or/and institution. Use comma to separte multiple web sites.{p_end}
+{synopt:{opt github(string)}} {p_end}
+{synopt:{opt twitter(string)}} {p_end}
+{synopt:{opt linkdn(string)}} {p_end}
+{synopt:{opt license(string)}} license of package. Default is MIT{p_end}
+
 {syntab:readme file}
 {synopt:{opt readme(string)}} name of readme file .md{p_end}
-{synopt:{opt title(string)}} title of the package. Small description{p_end}
-{synopt:{opt description(string)}} long description of package{p_end}
-{synopt:{opt author(string)}} name of author/s{p_end}
-{synopt:{opt email(string)}} email of author/s{p_end}
-{synopt:{opt institution(string)}} institution of author or package dependency{p_end}
-{synopt:{opt web(string)}} website address of author or/and institution{p_end}
-{synopt:{opt license(string)}} license of package. Default is MIT{p_end}
-{synopt:{opt note(string)}} additional notes{p_end}
-{synopt:{opt keyword(string)}} keywords to identify package{p_end}
-{synopt:{opt handle(string)}} handle of package{p_end}
 {synopt:{opt replacereadme}} replace existing readme file{p_end}
+{synopt:{opt description(string)}} long description of package{p_end}
+{synopt:{opt note(string)}} additional notes{p_end}
+{synopt:{opt keyword(string)}} keywords to identify package. Use comma to separate multiple keywords.{p_end}
+{synopt:{opt handle(string)}} handle of package{p_end}
 
 {syntab:pkg file}
 {synopt:{opt pkg}} crate .pkg file{p_end}
 {synopt:{opt replacepkg}} replace pkg file{p_end}
 {synopt:{opt appendpkg}} append pkg file{p_end}
-{synopt:{opt prefix(string)}} ??{p_end}
+{synopt:{opt prefix(string)}} specify the name of the subdirectory in which the Stata ado files are stored.{p_end}
 
 {syntab:toc file}
 {synopt:{opt toc}} create stata.toc file{p_end}
@@ -73,7 +78,7 @@
 {title:Description}
 {pstd}
 {cmd:package} Automatically generate PKG, TOC, README, and HELP files for Git 
-and Github dissemination of Stata user written ADO
+and Github dissemination of Stata user written ADO.
 
 {marker options}{...}
 {title:Options} {err: section in progress}
@@ -102,17 +107,29 @@ and Github dissemination of Stata user written ADO
 
 {phang} Create files for {cmd:packake}
 
-{p 4 6 2}. package package, path("c:\Users\ffff\myados") {p_end}
-{p 8 10 2}> readme(readme) replacereadme title(Stata module to notify users the end of routines){p_end}
-{p 8 10 2}> description(Automatically generate PKG, TOC and README files for Git and Github dissemination of Stata user written ADOs.){p_end}
-{p 8 10 2}> author(Joao Pedro Wagner De Azevedo){p_end}
-{p 8 10 2}> email(jazevedo@worldbank.org) {p_end}
-{p 8 10 2}> institution(The World Bank) {p_end}
-{p 8 10 2}> pkg toc helpfile{p_end}
+{p 4 6 2}. package package, path("c:\Users\ffff\myados") /// {p_end}
+{p 8 10 2} readme(readme) replacereadme title(Stata module to notify users the end of routines) /// {p_end} 
+{p 8 10 2} description(Automatically generate PKG, TOC and README files for Git and Github dissemination of Stata user written ADOs.) /// {p_end}
+{p 8 10 2} author(Joao Pedro Azevedo) /// {p_end}
+{p 8 10 2} email(jazevedo@worldbank.org) ///  {p_end}
+{p 8 10 2} institution(The World Bank) /// {p_end}
+{p 8 10 2} pkg toc helpfile{p_end}
 
+
+
+{p 4 6 2}. package package, path("c:\Users\ffff\myados") /// {p_end}
+{p 8 10 2} readme(readme) replacereadme title(Stata module to notify users the end of routines) /// {p_end} 
+{p 8 10 2} description(Automatically generate PKG, TOC and README files for Git and Github dissemination of Stata user written ADOs.) /// {p_end}
+{p 8 10 2} author(Joao Pedro Azevedo, R.Andres Castaneda) /// {p_end}
+{p 8 10 2} email(jazevedo@worldbank.org, acastanedaa@worldbank.org) ///  {p_end}
+{p 8 10 2} institution(The World Bank, The World Bank) /// {p_end}
+{p 8 10 2} web("http://www.worldbank.org/en/about/people/j/joao-pedro-azevedo", "https://github.com/randrescastaneda")  /// {p_end}
+{p 8 10 2} pkg toc helpfile{p_end}
+
+Please also see {help tknz} 
 
 {title:Author}
-{p 4 4 4}Joao Pedro Wagner De Azevedo, The World Bank{p_end}
+{p 4 4 4}Joao Pedro Azevedo, The World Bank{p_end}
 {p 6 6 4}Email: {browse "jazevedo@worldbank.org":  jazevedo@worldbank.org}{p_end}
 {p 6 6 4}GitHub:{browse "https://github.com/jpazvd": jpazvd}{p_end}
 

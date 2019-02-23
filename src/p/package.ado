@@ -1,7 +1,9 @@
-*! version 1.0.2 		<18Feb2019>		JPAzevedo
+*! version 1.0.3 		<20Feb2019>		JPAzevedo & RCastaneda
+*		add create help option, minor changes, package.shlp added
+* version 1.0.2 		<18Feb2019>		JPAzevedo
 *		add README.md option
-*! version 1.0.1 		<17Feb2019>		JPAzevedo
-*! version 1.0.0 		<16Feb2019>		JPAzevedo
+* version 1.0.1 		<17Feb2019>		JPAzevedo
+* version 1.0.0 		<16Feb2019>		JPAzevedo
 *	Original
 
 program define package, rclass
@@ -21,6 +23,9 @@ program define package, rclass
 			institution(string) ///
 			email(string) 		///
 			web(string) 		///
+			github(string) 		///
+			linkdn(string) 		///
+			twitter(string) 	///
 			license(string) 	///
 			note(string)		///
 			keyword(string)		///
